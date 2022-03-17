@@ -1,24 +1,22 @@
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.IndexMinPQ;
 import edu.princeton.cs.algs4.Picture;
-import edu.princeton.cs.algs4.StdOut;
 
 public class SeamCarver {
 
-    //do not construct explicit DirectedEdge and EdgeWeightedDigraph objects.
+    // do not construct explicit DirectedEdge and EdgeWeightedDigraph objects.
     private Picture pic;
     private int w;
     private int h;
     private int curW;
     private int curH;
-    int[] energy;
+    private double[] energy;
 
-    int s;
-    int d;
-    static int badColor = 0xFFFFFFFF;
+    private int s;
+    private int d;
 
-    Digraph horiGraph;
-    Digraph vertGraph;
+    private Digraph horiGraph;
+    private Digraph vertGraph;
 
     private class ColAndRow {
         int col;
@@ -42,38 +40,37 @@ public class SeamCarver {
         }
     }
 
-
-    private int getGradientSq(int color1, int color2) {
-
-        int deltaR = ((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF);
-        int deltaG = ((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF);
-        int deltaB = (color1 & 0xFF) - (color2 & 0xFF);
-
-        return (deltaR * deltaR + deltaB * deltaB + deltaG * deltaG);
-    }
-
-    // y = col; x = row
-    private int getPixEnergy(ColAndRow xy) {
-        int col = xy.col;
-        int row = xy.row;
-
-        if ((col == 0) || (row == 0) || (col == (w - 1)) || (row == (h - 1))) {
-            return 1000;
-        } else {
-            int xG = getGradientSq(pic.getRGB(col - 1, row), pic.getRGB(col + 1, row));
-            int yG = getGradientSq(pic.getRGB(col, row - 1), pic.getRGB(col, row + 1));
-            return (int) Math.sqrt(xG + yG);
-        }
-    }
-
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
         if (picture == null) {
             throw new IllegalArgumentException("Null picture");
         }
         updateSeamCarver(picture);
-//        StdOut.print("\nUpdateSeamCarver");
     }
+
+    private double getGradientSq(int color1, int color2) {
+
+        double deltaR = ((color1 >> 16) & 0xFF) - ((color2 >> 16) & 0xFF);
+        double deltaG = ((color1 >> 8) & 0xFF) - ((color2 >> 8) & 0xFF);
+        double deltaB = (color1 & 0xFF) - (color2 & 0xFF);
+
+        return (deltaR * deltaR + deltaB * deltaB + deltaG * deltaG);
+    }
+
+    // y = col; x = row
+    private double getPixEnergy(ColAndRow xy) {
+        int col = xy.col;
+        int row = xy.row;
+
+        if ((col == 0) || (row == 0) || (col == (w - 1)) || (row == (h - 1))) {
+            return 1000.0;
+        } else {
+            double xG = getGradientSq(pic.getRGB(col - 1, row), pic.getRGB(col + 1, row));
+            double yG = getGradientSq(pic.getRGB(col, row - 1), pic.getRGB(col, row + 1));
+            return Math.sqrt(xG + yG);
+        }
+    }
+
 
     private void updateSeamCarver(Picture picture) {
         this.pic = new Picture(picture);
@@ -81,7 +78,7 @@ public class SeamCarver {
         h = picture.height();
         curW = w;
         curH = h;
-        energy = new int[w * h + 2];
+        energy = new double[w * h + 2];
 
         // vertex 0 and w*h+1 is added vertex
         // vertex 1 to w*h are pixels
@@ -105,7 +102,7 @@ public class SeamCarver {
         }
 
         for (int i = 1; i <= h; i++) {
-            colRow = new ColAndRow((i - 1) * w + 1); //first column
+            colRow = new ColAndRow((i - 1) * w + 1); // first column
             // add add edge from s to first column
             horiGraph.addEdge(s, colRow.index);
 
@@ -152,17 +149,17 @@ public class SeamCarver {
         }
     }
 
-    static private int[] getSpt(Digraph g, int[] energy, int s) {
+    private static int[] getSpt(Digraph g, double[] energy, int s) {
 
-        int[] energyTo = new int[g.V()]; // energyTo[v] = length of smallest energy s->d path
+        double[] energyTo = new double[g.V()]; // energyTo[v] = length of smallest energy s->d path
         boolean[] marked = new boolean[g.V()]; // marked[v] = is there an s->v path?
         int[] edgeTo = new int[g.V()];  // edgeTo[v] = last edge on smallest energy s->d path
-        IndexMinPQ<Integer> pq;
+        IndexMinPQ<Double> pq;
 
         energyTo[s] = energy[s];
 
-        pq = new IndexMinPQ<Integer>(g.V());
-        pq.insert(s, 0);
+        pq = new IndexMinPQ<Double>(g.V());
+        pq.insert(s, 0.0);
         marked[s] = true;
         while (!pq.isEmpty()) {
             int v = pq.delMin();
@@ -187,68 +184,33 @@ public class SeamCarver {
         return edgeTo;
     }
 
-    private void printEnergy() {
-        StdOut.print("\nEnergy Matrix:");
-        for (int r = 0; r < h; r++) {
-            StdOut.printf("\n row [%d]:", r);
-            for (int c = 0; c < w; c++) {
-                StdOut.printf("%6.0f ", energy(c, r));
-            }
-        }
-        StdOut.print("\n");
-    }
+//    private void printEnergy() {
+//        StdOut.print("\nEnergy Matrix:");
+//        for (int r = 0; r < h; r++) {
+//            StdOut.printf("\n row [%d]:", r);
+//            for (int c = 0; c < w; c++) {
+//                StdOut.printf("%6.0f ", energy(c, r));
+//            }
+//        }
+//        StdOut.print("\n");
+//    }
 
-    private void printPic() {
-        StdOut.print("\nPic:");
-        for (int r = 0; r < h; r++) {
-            StdOut.printf("\n row [%d]:", r);
-            for (int c = 0; c < w; c++) {
-                StdOut.printf("%8x ", pic.getRGB(c, r));
-            }
-        }
-        StdOut.print("\n");
-    }
+//    private void printPic() {
+//        StdOut.print("\nPic:");
+//        for (int r = 0; r < h; r++) {
+//            StdOut.printf("\n row [%d]:", r);
+//            for (int c = 0; c < w; c++) {
+//                StdOut.printf("%8x ", pic.getRGB(c, r));
+//            }
+//        }
+//        StdOut.print("\n");
+//    }
 
     // current picture
     public Picture picture() {
         Picture newPic = new Picture(pic);
         return newPic;
     }
-
-    private void rebuildHoriPic() {
-        Picture newPic = new Picture(curW, curH);
-        // fill up new picture row by row
-        for (int col = 0; col < w; col++) {
-            int r = 0;
-            for (int row = 0; row < h; row++) {
-                int rgb = pic.getRGB(col, row);
-                if (rgb != badColor) {
-                    newPic.setRGB(col, r, rgb);
-                    r++;
-                }
-            }
-        }
-
-        updateSeamCarver(newPic);
-    }
-
-    private void rebuildVertPic() {
-        Picture newPic = new Picture(curW, curH);
-        // fill up new picture row by row
-        for (int row = 0; row < h; row++) {
-            int c = 0;
-            for (int col = 0; col < w; col++) {
-                int rgb = pic.getRGB(col, row);
-                if (rgb != badColor) {
-                    newPic.setRGB(c, row, rgb);
-                    c++;
-                }
-            }
-        }
-
-        updateSeamCarver(newPic);
-    }
-
 
     // width of current picture
     public int width() {
@@ -276,10 +238,9 @@ public class SeamCarver {
         int[] seams = new int[w];
 
         ColAndRow xy;
-        for (int i = d, j = 0; spt[i] != s && j < seams.length; i = spt[i]) {
+        for (int i = d; spt[i] != s; i = spt[i]) {
             xy = new ColAndRow(spt[i]);
             seams[xy.col] = xy.row;
-            j++;
         }
         return seams;
     }
@@ -294,6 +255,20 @@ public class SeamCarver {
             seams[xy.row] = xy.col;
         }
         return seams;
+    }
+
+    // make sure column index is between 0 and width - 1
+    private void validateCol(int col) {
+        if (col < 0 || col > w - 1) {
+            throw new IllegalArgumentException("colmun index is out of range\n");
+        }
+    }
+
+    // make sure row index is between 0 and height - 1
+    private void validateRow(int row) {
+        if (row < 0 || row > h - 1) {
+            throw new IllegalArgumentException("row index is out of range\n");
+        }
     }
 
     // remove horizontal seam from current picture
@@ -311,9 +286,6 @@ public class SeamCarver {
 
         int preSeam = seam[0];
         for (int i = 1; i < seam.length; i++) {
-            if ((seam[i] < 0) || (seam[i] >= h)) {
-                throw new IllegalArgumentException("Out of range seam value.");
-            }
 
             if (Math.abs(seam[i] - preSeam) > 1)
                 throw new IllegalArgumentException("Difference of adjacent Seams larger than 1");
@@ -321,14 +293,19 @@ public class SeamCarver {
             preSeam = seam[i];
         }
 
-        ColAndRow cr;
         curH--;
-        for (int c = 0; c < seam.length; c++) {
-            cr = new ColAndRow(c, seam[c]);
-            pic.setRGB(cr.col, cr.row, badColor);
-            energy[cr.index] = 2000;
+        Picture tmpPicture = new Picture(w, h - 1);
+        for (int col = 0; col < w; col++) {
+            for (int row = 0; row < h - 1; row++) {
+                validateRow(seam[col]);
+                if (row < seam[col]) {
+                    tmpPicture.setRGB(col, row, pic.getRGB(col, row));
+                } else {
+                    tmpPicture.setRGB(col, row, pic.getRGB(col, row + 1));
+                }
+            }
         }
-        rebuildHoriPic();
+        updateSeamCarver(tmpPicture);
     }
 
     // remove vertical seam from current picture
@@ -347,9 +324,6 @@ public class SeamCarver {
 
         int preSeam = seam[0];
         for (int i = 1; i < seam.length; i++) {
-            if ((seam[i] < 0) || (seam[i] >= w)) {
-                throw new IllegalArgumentException("Out of range seam value.");
-            }
 
             if (Math.abs(seam[i] - preSeam) > 1)
                 throw new IllegalArgumentException("Difference of adjacent Seams larger than 1");
@@ -362,13 +336,18 @@ public class SeamCarver {
 //        System.out.println(Arrays.toString(seam));
 
         curW--;
-        ColAndRow cr;
-        for (int r = 0; r < seam.length; r++) {
-            cr = new ColAndRow(seam[r], r);
-            pic.setRGB(cr.col, cr.row, badColor);
-            energy[cr.index] = 2000;
+        Picture tmpPicture = new Picture(w - 1, h);
+        for (int row = 0; row < h; row++) {
+            for (int col = 0; col < w - 1; col++) {
+                validateCol(seam[row]);
+                if (col < seam[row]) {
+                    tmpPicture.setRGB(col, row, pic.getRGB(col, row));
+                } else {
+                    tmpPicture.setRGB(col, row, pic.getRGB(col + 1, row));
+                }
+            }
         }
-        rebuildVertPic();
+        updateSeamCarver(tmpPicture);
     }
 
     // unit testing (optional)
