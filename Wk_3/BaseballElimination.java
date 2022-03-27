@@ -6,8 +6,6 @@ import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.ST;
 import edu.princeton.cs.algs4.StdOut;
 
-import java.util.Arrays;
-
 public class BaseballElimination {
 
     private final ST<String, Integer> teamId;
@@ -31,14 +29,22 @@ public class BaseballElimination {
 //            String input1 = teamInfo.readLine();
         for (int i = 0; i < numOfTeam; i++) {
             if (!teamInfo.isEmpty()) {
-                String[] input = teamInfo.readLine().split("\\s+");
-                StdOut.println(Arrays.toString(input));
-                teamId.put(input[0], i);
-                w[i] = Integer.parseInt(input[1]);
-                losses[i] = Integer.parseInt(input[2]);
-                r[i] = Integer.parseInt(input[3]);
+
+                String teamName = teamInfo.readString();
+                teamId.put(teamName, i);
+                StdOut.println();
+                StdOut.print(teamName);
+
+
+                w[i] = teamInfo.readInt();
+                StdOut.print(" " + w[i]);
+                losses[i] = teamInfo.readInt();
+                StdOut.print(" " + losses[i]);
+                r[i] = teamInfo.readInt();
+                StdOut.print(" " + r[i] + "   ");
                 for (int j = 0; j < numOfTeam; j++) {
-                    g[i][j] = Integer.parseInt(input[4 + j]);
+                    g[i][j] = teamInfo.readInt();
+                    StdOut.print(" " + g[i][j]);
                 }
             }
         }
