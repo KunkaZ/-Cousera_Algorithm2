@@ -81,13 +81,14 @@ public class BoggleSolver {
         for (int w : getAdjacentVertex(v, board.cols(), board.rows())) {
 //            StdOut.println(v + "->" + w);
             if (!marked[w]) {
-                dfsWord.append(get1dLetter(w, board));
+                String letter = get1dLetter(w, board);
+                dfsWord.append(letter);
 //                StdOut.println("w:" + w + " dfsWord:" + dfsWord.toString());
                 String tempWord = dfsWord.toString();
                 Queue<String> lp = (Queue<String>) dict.keysWithPrefix(tempWord);
                 if (lp.size() > 0) {
                     // tempWord is a word OR a prefix of a word
-                    if ((dict.contains(tempWord)) && (tempWord.length() >= 3)) {
+                    if ((tempWord.length() >= 3) && (dict.contains(tempWord))) {
 
                         allValidWords.add(tempWord);  // remove duplicated word, Should I?
 
@@ -97,7 +98,7 @@ public class BoggleSolver {
 
 //                    StdOut.println("Return:" + " dfsWord:" + dfsWord);
                 // remove new added letters when exist current dfs function call
-                dfsWord.setLength(dfsWord.length() - get1dLetter(w, board).length());
+                dfsWord.setLength(dfsWord.length() - letter.length());
 
             }
         }
