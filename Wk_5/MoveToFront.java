@@ -1,5 +1,5 @@
-import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.BinaryStdIn;
+import edu.princeton.cs.algs4.BinaryStdOut;
 
 
 public class MoveToFront {
@@ -9,62 +9,41 @@ public class MoveToFront {
     public static void encode() {
 
         String R = buildR();
-
-
-        StdOut.println(R);
-
-//        R = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String input = "ABRACADABRA";
-        Queue<Integer> output = new Queue<Integer>();
+        String input = BinaryStdIn.readString();
 
         for (int i = 0; i < input.length(); i++) {
 
             int id = R.indexOf(input.charAt(i));
-
-            StdOut.println("input char:" + input.charAt(i) + " id:" + id);
-            StdOut.println("Seq: " + R);
-
             if (id >= 0) {
-                output.enqueue(id);
-                // Check this output is correct, when id == 256
+                BinaryStdOut.write((char) id);
                 R = move(R, id);
-
             } else {
                 throw new IllegalArgumentException("String:" + input.charAt(i) + " not in ASCII");
             }
-            StdOut.println("Seq: " + R);
         }
-
-        StdOut.println(output.toString());
+        BinaryStdOut.close();
     }
 
 
     // apply move-to-front decoding, reading from standard input and writing to standard output
     public static void decode() {
-        Integer[] input = {65, 66, 82, 2, 68, 1, 69, 1, 4, 4, 2, 38};
-//        Integer[] input = {0, 0, 15, 24, 2, 1, 3, 1, 25, 4, 2};
-
         String R = buildR();
-        StringBuilder output = new StringBuilder();
+        String input = BinaryStdIn.readString();
 
-        for (int i = 0; i < input.length; i++) {
-            int id = input[i];
+
+        for (int i = 0; i < input.length(); i++) {
+            int id = R.indexOf(input.charAt(i));
 
             if ((id < 0) || (id > 255)) {
                 throw new IllegalArgumentException(" id:" + id);
             }
-            StdOut.println("id:" + id);
-            StdOut.println("Seq:" + R.substring(0, 20));
-            StdOut.println("id of R:" + R.indexOf(id));
 
-            StdOut.println("id012:" + R.charAt(0) + " " + R.charAt(1) + " " + R.charAt(2));
+            BinaryStdOut.write(R.charAt(id));
 
-
-            output.append(R.charAt(id));
             R = move(R, id);
-            StdOut.println(output.toString());
+
         }
-        StdOut.println(output.toString());
+        BinaryStdOut.close();
     }
 
     private static String move(String R, int id) {
@@ -84,7 +63,7 @@ public class MoveToFront {
         StringBuilder strBld = new StringBuilder();
         for (int i = 0; i < 256; i++) {
 //        for (int i = 65; i < 91; i++) {
-            strBld.append(Character.toString(i));
+            strBld.append((char) i);
         }
         return strBld.toString();
 
@@ -94,9 +73,9 @@ public class MoveToFront {
     // if args[0] is "+", apply move-to-front decoding
     public static void main(String[] args) {
 //        if (args[0] == "-") {
-//        encode();
+        encode();
 //        } else if (args[0] == "+") {
-        decode();
+//        decode();
 //        }
 
 
