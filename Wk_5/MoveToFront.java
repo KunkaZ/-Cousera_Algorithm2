@@ -28,21 +28,19 @@ public class MoveToFront {
     // apply move-to-front decoding, reading from standard input and writing to standard output
     public static void decode() {
         String R = buildR();
-        String input = BinaryStdIn.readString();
 
 
-        for (int i = 0; i < input.length(); i++) {
-            int id = R.indexOf(input.charAt(i));
-
+        while (!BinaryStdIn.isEmpty()) {
+            int id = BinaryStdIn.readChar();
+//            StdOut.printf("id = %x ", id);
             if ((id < 0) || (id > 255)) {
                 throw new IllegalArgumentException(" id:" + id);
             }
 
             BinaryStdOut.write(R.charAt(id));
-
             R = move(R, id);
-
         }
+//        StdOut.println(" ");
         BinaryStdOut.close();
     }
 
@@ -62,22 +60,23 @@ public class MoveToFront {
     private static String buildR() {
         StringBuilder strBld = new StringBuilder();
         for (int i = 0; i < 256; i++) {
-//        for (int i = 65; i < 91; i++) {
             strBld.append((char) i);
         }
         return strBld.toString();
-
     }
 
     // if args[0] is "-", apply move-to-front encoding
     // if args[0] is "+", apply move-to-front decoding
     public static void main(String[] args) {
-//        if (args[0] == "-") {
-        encode();
-//        } else if (args[0] == "+") {
-//        decode();
-//        }
+        if (args[0].equals("-")) {
 
+            MoveToFront.encode();
+        }
+        if (args[0].equals("+")) {
+            MoveToFront.decode();
+        }
+//        StdOut.println(" ");
+//        encode();
 
     }
 }
