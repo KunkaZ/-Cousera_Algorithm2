@@ -11,6 +11,8 @@ public class CircularSuffixArray {
 
     // circular suffix array of s
     public CircularSuffixArray(String s) {
+        if (s == null)
+            throw new IllegalArgumentException("Null input");
 //        Throw an IllegalArgumentException in the constructor if the argument is null. Throw an
 //        IllegalArgumentException in the method index() if i is outside its prescribed range (between 0 and n − 1)
 //  constructor must take time proportional to n log n
@@ -43,6 +45,8 @@ public class CircularSuffixArray {
 
     // returns index of ith sorted suffix
     public int index(int i) {
+        if ((i < 0) || (i > length))
+            throw new IllegalArgumentException("i out of range");
         return index[i];
     }
 
