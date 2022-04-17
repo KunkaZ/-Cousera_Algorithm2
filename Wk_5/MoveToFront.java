@@ -8,15 +8,16 @@ public class MoveToFront {
     // apply move-to-front encoding, reading from standard input and writing to standard output
     public static void encode() {
 
-        String R = buildR();
+        char[] letters = buildR();
         String input = BinaryStdIn.readString();
 
         for (int i = 0; i < input.length(); i++) {
 
-            int id = R.indexOf(input.charAt(i));
+//            StdOut.println("R: " + alphabet);
+//            StdOut.println("input:" + input.charAt(i));
+            char id = input.charAt(i);
             if (id >= 0) {
-                BinaryStdOut.write((char) id);
-                R = move(R, id);
+                move(letters, id, true);
             } else {
                 throw new IllegalArgumentException("String:" + input.charAt(i) + " not in ASCII");
             }
@@ -27,42 +28,46 @@ public class MoveToFront {
 
     // apply move-to-front decoding, reading from standard input and writing to standard output
     public static void decode() {
-        String R = buildR();
-
+        char[] letters = buildR();
 
         while (!BinaryStdIn.isEmpty()) {
-            int id = BinaryStdIn.readChar();
+            char id = BinaryStdIn.readChar();
 //            StdOut.printf("id = %x ", id);
             if ((id < 0) || (id > 255)) {
                 throw new IllegalArgumentException(" id:" + id);
             }
-
-            BinaryStdOut.write(R.charAt(id));
-            R = move(R, id);
+            BinaryStdOut.write(letters[id]);
+            move(letters, letters[id], false);
         }
 //        StdOut.println(" ");
         BinaryStdOut.close();
     }
 
-    private static String move(String R, int id) {
+    private static void move(char[] letters, char id, boolean writeChar) {
 
         // Check this output is correct, when id == 256
-        if (id == 0) {
-            R = R.substring(1) + R.charAt(0);
-        } else if (id == (R.length() - 1)) {
-            R = R.charAt(id) + R.substring(0, id - 1);
-        } else
-            R = R.charAt(id) + R.substring(0, id) + R.substring(id + 1);
-
-        return R;
+        char pre = letters[0];
+        for (int i = 0; i < letters.length; i++) {
+            if (letters[i] == id) {
+                letters[0] = id;
+                letters[i] = pre;
+                if (writeChar) {
+                    BinaryStdOut.write((char) i);
+                }
+                break;
+            }
+            char temp = letters[i];
+            letters[i] = pre;
+            pre = temp;
+        }
     }
 
-    private static String buildR() {
-        StringBuilder strBld = new StringBuilder();
+    private static char[] buildR() {
+        char[] retChar = new char[256];
         for (int i = 0; i < 256; i++) {
-            strBld.append((char) i);
+            retChar[i] = (char) i;
         }
-        return strBld.toString();
+        return retChar;
     }
 
     // if args[0] is "-", apply move-to-front encoding
