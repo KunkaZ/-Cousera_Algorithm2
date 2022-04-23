@@ -27,7 +27,7 @@ public class BurrowsWheeler {
     // apply Burrows-Wheeler inverse transform,
     // reading from standard input and writing to standard output
     public static void inverseTransform() {
-        int R = 256;
+        int numOfLetters = 256;
         // input is first and t, we can sort t to get the first column of sorted suffixes
         int first = BinaryStdIn.readInt();
         String t = BinaryStdIn.readString();
@@ -39,14 +39,14 @@ public class BurrowsWheeler {
 
         int[] next = new int[t.length()];
 
-        int[] duplicatedCnts = new int[R + 1];
+        int[] duplicatedCnts = new int[numOfLetters + 1];
 
         // use key indexed string sorting
         for (int i = 0; i < t.length(); i++) {
             duplicatedCnts[t.charAt(i) + 1]++;
         }
 
-        for (int r = 0; r < R; r++) {
+        for (int r = 0; r < numOfLetters; r++) {
             duplicatedCnts[r + 1] += duplicatedCnts[r];
         }
 
